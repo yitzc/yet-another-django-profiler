@@ -38,7 +38,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'yet_another_django_profiler.ProfilerMiddleware',
+    'yet_another_django_profiler.middleware.ProfilerMiddleware',
 )
 
 ROOT_URLCONF = 'test_urls'

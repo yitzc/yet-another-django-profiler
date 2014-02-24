@@ -8,6 +8,5 @@ A django profiling middeware that tries to consolidate the best features of
 the ones that came before it.  Originally described at
 http://blog.safariflow.com/2013/11/21/profiling-django-via-middleware/
 """
-from .profiler_middleware import ProfilerMiddleware
 
 __version__ = (0, 1, 0)

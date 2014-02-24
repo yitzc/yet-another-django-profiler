@@ -13,7 +13,7 @@ First, get the code via pip install::
 
     pip install yet-another-django-profiler
 
-Then add ``yet_another_django_profiler.ProfilerMiddleware`` to your
+Then add ``yet_another_django_profiler.middleware.ProfilerMiddleware`` to your
 ``MIDDLEWARE_CLASSES`` Django setting (typically at the end of the list, if
 you want to include profiling data on the other middleware that's in use).
 If you want to generate call graphs with the middleware, you also need to

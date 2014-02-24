@@ -6,7 +6,7 @@ yet-another-django-profiler setup script
 """
 
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from yet_another_django_profiler import __version__
 
