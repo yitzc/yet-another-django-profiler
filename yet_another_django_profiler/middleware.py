@@ -129,7 +129,7 @@ class ProfilerMiddleware(object):
                     restrictions.append(float(request.REQUEST[settings.YADP_FRACTION_PARAMETER]))
                 elif settings.YADP_MAX_CALLS_PARAMETER in request.REQUEST:
                     restrictions.append(int(request.REQUEST[settings.YADP_MAX_CALLS_PARAMETER]))
-                elif not settings.YADP_PATTERN_PARAMETER in request.REQUEST:
+                elif settings.YADP_PATTERN_PARAMETER not in request.REQUEST:
                     restrictions.append(.2)
                 stats.sort_stats(mode).print_stats(*restrictions)
                 return text_response(response, out.getvalue())

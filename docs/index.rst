@@ -10,6 +10,7 @@ Contents:
 
    readme
    settings
+   CHANGELOG
    Python API <python/modules>
    related
 

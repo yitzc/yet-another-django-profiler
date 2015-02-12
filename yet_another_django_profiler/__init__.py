@@ -9,4 +9,4 @@ the ones that came before it.  Originally described at
 http://blog.safariflow.com/2013/11/21/profiling-django-via-middleware/
 """
 
-__version__ = (0, 1, 0)
+__version__ = (0, 2, 0)

@@ -13,12 +13,20 @@ from yet_another_django_profiler import __version__
 version = '.'.join(str(n) for n in __version__)
 
 install_requires = [
-    'Django>=1.6.1,<1.7',
+    'Django',
 ]
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
-    install_requires.append('sbo-sphinx==2.0.1')
+    from pip.download import PipSession
+    from pip.index import PackageFinder
+    from pip.req import parse_requirements
+    session = PipSession()
+    root_dir = os.path.abspath(os.path.dirname(__file__))
+    requirements_path = os.path.join(root_dir, 'requirements', 'development.txt')
+    finder = PackageFinder([], [], session=session)
+    requirements = parse_requirements(requirements_path, finder, session=session)
+    install_requires.extend([r.req for r in requirements])
 
 setup(
     name='yet-another-django-profiler',
