@@ -26,7 +26,8 @@ Django view.  This uses Graphviz to generate a PDF representation of the call
 graph for the code executed to perform the view, and returns that as the
 response to the request instead of the rendered view itself.  So calling a
 URL like ``http://localhost:8000/admin/?profile`` shows a PDF like
-:download:`this <admin_call_graph.pdf>` in the browser.
+`this <https://github.com/safarijv/yet-another-django-profiler/blob/master/docs/admin_call_graph.pdf?raw=true>`_
+in the browser.
 
 Alternatively, you can display a table of called functions ordered by the
 desired statistic by using a URL such as ``http://localhost:8000/?profile=time``.
@@ -88,4 +89,5 @@ following settings:
 * ``YADP_PATTERN_PARAMETER`` (default is "pattern")
 
 In order to get simple and meaningful profiling data, a
-`few other changes <docs/settings>`_ to your settings may be in order.
+`few other changes <https://github.com/safarijv/yet-another-django-profiler/blob/master/docs/settings.rst>`_
+to your settings may be in order.

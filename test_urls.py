@@ -5,9 +5,17 @@
 URL configuration for Yet Another Django Profiler tests.
 """
 
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
+from django.conf.urls import patterns, url
+from django.http import HttpResponse
+from django.views.generic.base import View
 
-urlpatterns = patterns('',
-    url(r'^admin/', include(admin.site.urls)),
+
+class TestView(View):
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('This is only a test.')
+
+urlpatterns = patterns(
+    '',
+    url(r'^test/', TestView.as_view(), name='test'),
 )
