@@ -1,6 +1,9 @@
 # encoding: utf-8
 # Created by Jeremy Bowman on Thu Feb 20 16:54:00 EST 2014
-# Copyright (c) 2014 Safari Books Online. All rights reserved.
+# Copyright (c) 2014, 2015 Safari Books Online. All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the 3-clause BSD license.  See the LICENSE file for details.
 """
 yet-another-django-profiler setup script
 """
@@ -39,7 +42,7 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',

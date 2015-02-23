@@ -154,3 +154,11 @@ but can be customized via the following settings:
 In order to get simple and meaningful profiling data, a
 `few other changes <https://github.com/safarijv/yet-another-django-profiler/blob/master/docs/settings.rst>`_
 to your settings may be in order.
+
+License
+-------
+Due to gprof2dot being licensed under the LGPL v3, that's the license that
+applies to this package as a whole.  However, the rest of the source files are
+individually licensed under a more permissive 3-clause BSD license (so it is
+possible to assemble a BSD-licensed package that omits only the call graph
+generation feature).
