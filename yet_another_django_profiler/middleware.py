@@ -5,9 +5,12 @@
 Yet Another Django Profiler middleware implementation
 """
 
+from __future__ import unicode_literals
+
 import cProfile
 from cStringIO import StringIO
 import marshal
+import mock
 import os
 import pstats
 import subprocess
@@ -16,6 +19,12 @@ import tempfile
 from django.core.exceptions import MiddlewareNotUsed
 
 from .conf import settings
+
+
+def func_strip_path(func_name):
+    """Replacement for pstats.func_strip_path which yields qualified module names"""
+    filename, line, name = func_name
+    return settings.path_to_module_function(filename), line, name
 
 
 def text_response(response, content):
@@ -70,7 +79,7 @@ class ProfilerMiddleware(object):
 
     Additional parameters can be added when generating a statistics table:
 
-    * fraction - The fraction of total function calls to display (the default of .2 is omitted if lines or filter are specified)
+    * fraction - The fraction of total function calls to display (the default of .2 is omitted if max_calls or pattern are specified)
     * max_calls - The maximum number of function calls to display
     * pattern - Regular expression filter for function display names
 
@@ -99,6 +108,9 @@ class ProfilerMiddleware(object):
         if settings.YADP_ENABLED and settings.YADP_PROFILE_PARAMETER in request.REQUEST:
             self.profiler.create_stats()
             mode = request.REQUEST[settings.YADP_PROFILE_PARAMETER]
+            if mode == 'file':
+                # Work around bug on Python versions >= 2.7.4
+                mode = 'fil'
             if not mode:
                 if not which('dot'):
                     return text_response(response, 'Could not find "dot" from Graphviz; please install Graphviz to enable call graph generation')
@@ -122,6 +134,9 @@ class ProfilerMiddleware(object):
             else:
                 out = StringIO()
                 stats = pstats.Stats(self.profiler, stream=out)
+                with mock.patch('pstats.func_strip_path') as mock_func_strip_path:
+                    mock_func_strip_path.side_effect = func_strip_path
+                    stats.strip_dirs()
                 restrictions = []
                 if settings.YADP_PATTERN_PARAMETER in request.REQUEST:
                     restrictions.append(request.REQUEST[settings.YADP_PATTERN_PARAMETER])
