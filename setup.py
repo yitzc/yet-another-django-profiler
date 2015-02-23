@@ -6,7 +6,7 @@ yet-another-django-profiler setup script
 """
 
 import os
-from setuptools import setup
+from setuptools import find_packages, setup
 
 from yet_another_django_profiler import __version__
 
@@ -14,6 +14,7 @@ version = '.'.join(str(n) for n in __version__)
 
 install_requires = [
     'Django',
+    'mock',
 ]
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -47,9 +48,7 @@ setup(
     ],
     description='Django middleware for performance profiling directly from the browser',
     url='http://github.com/safarijv/yet-another-django-profiler',
-    packages=[
-        'yet_another_django_profiler',
-    ],
+    packages=find_packages(exclude=['ez_setup', 'tests']),
     scripts=['gprof2dot.py'],
     zip_safe=True,
     install_requires=install_requires,

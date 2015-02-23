@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'yet_another_django_profiler',
     'django_nose',
 )
 

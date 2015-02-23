@@ -5,6 +5,8 @@
 Yet Another Django Profiler request parameters tests
 """
 
+from __future__ import unicode_literals
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -58,7 +60,7 @@ class ParametersTest(TestCase):
     def test_calls_by_primitive_call_count(self):
         """Using profile=pcalls should show a table of function calls sorted by primitive call count"""
         response = self._get_test_page('profile=pcalls')
-        self.assertContains(response, 'Ordered by: call count')
+        self.assertRegexpMatches(response.content, r'Ordered by: (primitive )?call count')
 
     def test_calls_by_stdname(self):
         """Using profile=stdname should show a table of function calls sorted by standard name"""
