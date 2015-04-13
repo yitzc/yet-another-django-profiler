@@ -1,6 +1,9 @@
 import yappi
 
 class YappiProfile(object):
+    """ Wrapper class that represents Yappi profiling backend with API matching
+        the cProfile.
+    """
     def __init__(self):
         self.stats = None
 
