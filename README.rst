@@ -104,6 +104,8 @@ be used to profile other Django management commands::
                             The maximum number of function calls to display
       -p PATTERN, --pattern=PATTERN
                             Regular expression filter for function display names
+      -b BACKEND, --backend=BACKEND
+                            Profiler backend to use (cProfile or yappi)
       --version             show program's version number and exit
       -h, --help            show this help message and exit
 
