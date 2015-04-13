@@ -20,7 +20,7 @@ class ParametersTest(PageTest):
     def test_call_graph(self):
         """Using "profile" without a parameter should yield a PDF call graph"""
         response = self._get_test_page('profile')
-        self.assertEqual(response['Content-Type'], 'application/pdf')
+        assert response['Content-Type'] == 'application/pdf'
 
     def test_calls_by_count(self):
         """Using profile=calls should show a table of function calls sorted by call count"""
