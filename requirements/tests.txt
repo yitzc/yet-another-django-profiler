@@ -34,3 +34,6 @@ pytest-xdist==1.11
 
 # For managing test environments
 tox==1.8.1
+
+# Testing Yappi profile backend
+yappi==0.94

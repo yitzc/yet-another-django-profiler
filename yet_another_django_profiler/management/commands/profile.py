@@ -64,6 +64,12 @@ class Command(BaseCommand):
             '--pattern',
             dest='pattern',
             help='Regular expression filter for function display names'
+        ),
+        make_option(
+            '-b',
+            '--backend',
+            dest='backend',
+            help='Profiler backend to use (cProfile or yappi)'
         )
     )
     option_list = BaseCommand.option_list + custom_options
@@ -100,7 +106,12 @@ class Command(BaseCommand):
             # our parameters
             BaseCommand.option_list += self.custom_options
 
-        profiler = cProfile.Profile()
+        if options['backend'] == 'yappi':
+            import yet_another_django_profiler.yadp_yappi as yadp_yappi
+            profiler = yadp_yappi.YappiProfile()
+        else:
+            profiler = cProfile.Profile()
+
         atexit.register(output_results, profiler, options, self.stdout)
         profiler.runcall(call_command, command_name, *command_args, **command_options.__dict__)
         sys.exit(0)

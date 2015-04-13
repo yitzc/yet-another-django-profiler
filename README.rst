@@ -104,6 +104,8 @@ be used to profile other Django management commands::
                             The maximum number of function calls to display
       -p PATTERN, --pattern=PATTERN
                             Regular expression filter for function display names
+      -b BACKEND, --backend=BACKEND
+                            Profiler backend to use (cProfile or yappi)
       --version             show program's version number and exit
       -h, --help            show this help message and exit
 
@@ -133,6 +135,10 @@ following settings:
 
 * ``YADP_PATTERN_PARAMETER`` (default is "pattern")
 
+You can use Yappi(`Yet Another Python Profiler <https://code.google.com/p/yappi/>`_)
+as a profiler backend instead of cProfile. To do that just specify
+``YADP_PROFILER_BACKEND = 'yappi'`` in the settings.
+
 An effort is made to convert the absolute Python file paths provided by the
 profiler to full-qualified module names (which are typically shorter and
 easier to understand at a glance).  The default rules should work in most cases
@@ -154,6 +160,7 @@ but can be customized via the following settings:
 In order to get simple and meaningful profiling data, a
 `few other changes <https://github.com/safarijv/yet-another-django-profiler/blob/master/docs/settings.rst>`_
 to your settings may be in order.
+
 
 License
 -------
