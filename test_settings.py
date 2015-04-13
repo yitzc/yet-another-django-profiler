@@ -33,7 +33,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'yet_another_django_profiler',
-    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,4 +58,3 @@ TIME_ZONE = 'UTC'
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
