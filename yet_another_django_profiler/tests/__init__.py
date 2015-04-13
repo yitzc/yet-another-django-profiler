@@ -7,3 +7,15 @@
 """
 Tests for Yet Another Django Profiler
 """
+from django.core.urlresolvers import reverse
+from django.test.utils import override_settings
+from django.test import TestCase
+
+
+@override_settings(YADP_ENABLED=True)
+class PageTest(TestCase):
+    def _get_test_page(self, params=''):
+        url = reverse('test')
+        if params:
+            url += '?' + params
+        return self.client.get(url)

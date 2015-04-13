@@ -75,6 +75,10 @@ class LazySettings(object):
     def YADP_PROFILE_PARAMETER(self):
         return getattr(django_settings, 'YADP_PROFILE_PARAMETER', 'profile')
 
+    @property
+    def YADP_PROFILER_BACKEND(self):
+        return getattr(django_settings, 'YADP_PROFILER_BACKEND', 'cProfile')
+
     @cached_property
     def path_to_module_function(self):
         """Resolve the function to use for converting paths to module names"""

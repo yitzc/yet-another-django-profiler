@@ -13,6 +13,7 @@ from __future__ import unicode_literals
 import cProfile
 from cStringIO import StringIO
 import marshal
+from django.utils import six
 import mock
 import os
 import pstats
@@ -103,12 +104,22 @@ class ProfilerMiddleware(object):
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if settings.YADP_ENABLED and (settings.YADP_PROFILE_PARAMETER in request.REQUEST):
-            self.profiler = cProfile.Profile()
+            if settings.YADP_PROFILER_BACKEND == 'yappi':
+                try:
+                    import yadp_yappi
+                    self.profiler = yadp_yappi.YappiProfile()
+                except:
+                    self.profiler = 'Could not find Yappi; please install Yappi to be able to use it for profiling'
+
+            else:
+                self.profiler = cProfile.Profile()
             args = (request,) + callback_args
             return self.profiler.runcall(callback, *args, **callback_kwargs)
 
     def process_response(self, request, response):
         if settings.YADP_ENABLED and settings.YADP_PROFILE_PARAMETER in request.REQUEST:
+            if isinstance(self.profiler, six.string_types):
+                return text_response(response, self.profiler)  # we got an error
             self.profiler.create_stats()
             mode = request.REQUEST[settings.YADP_PROFILE_PARAMETER]
             if mode == 'file':
@@ -137,6 +148,7 @@ class ProfilerMiddleware(object):
             else:
                 out = StringIO()
                 stats = pstats.Stats(self.profiler, stream=out)
+
                 with mock.patch('pstats.func_strip_path') as mock_func_strip_path:
                     mock_func_strip_path.side_effect = func_strip_path
                     stats.strip_dirs()
