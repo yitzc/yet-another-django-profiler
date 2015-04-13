@@ -10,12 +10,15 @@ Yet Another Django Profiler request parameters tests
 
 from __future__ import unicode_literals
 
-from yet_another_django_profiler.tests import PageTest
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.test.utils import override_settings
 
 HELP_EXCERPT = 'profiling middleware'
 
 
-class ParametersTest(PageTest):
+@override_settings(YADP_ENABLED=True)
+class ParametersTest(TestCase):
 
     def test_call_graph(self):
         """Using "profile" without a parameter should yield a PDF call graph"""
@@ -96,3 +99,9 @@ class ParametersTest(PageTest):
         """It should be possible to specify a regular expression filter pattern"""
         response = self._get_test_page('profile=time&pattern=test')
         self.assertContains(response, "due to restriction <u'test'>")
+
+    def _get_test_page(self, params=''):
+        url = reverse('test')
+        if params:
+            url += '?' + params
+        return self.client.get(url)
