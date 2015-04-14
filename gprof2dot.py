@@ -21,6 +21,7 @@
 __author__ = "Jose Fonseca et al"
 
 
+import codecs
 import sys
 import math
 import os.path
@@ -3144,7 +3145,10 @@ def main():
     profile = parser.parse()
 
     if options.output is None:
-        output = sys.stdout
+        if PYTHON_3:
+            output = codecs.getwriter('utf8')(sys.stdout.buffer)
+        else:
+            output = sys.stdout
     else:
         if PYTHON_3:
             output = open(options.output, 'wt', encoding='UTF-8')

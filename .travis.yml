@@ -1,4 +1,9 @@
 language: python
+sudo: false
+addons:
+  apt:
+    packages:
+    - graphviz
 python: 2.7
 env:
   - TOX_ENV=py27-django15
@@ -27,9 +32,6 @@ env:
   - TOX_ENV=pypy3-django18
   - TOX_ENV=docs
   - TOX_ENV=flake8
-before_install:
-# We need GraphViz for call graph generation tests
- - "sudo apt-get install graphviz 2>&1 | tail -n 2"
 install:
   - pip install tox==1.9.2
 script:
