@@ -11,11 +11,15 @@ Custom Django settings for Yet Another Django Profiler middleware
 from __future__ import unicode_literals
 
 import os
+import platform
 import re
+import sys
 
 from django.conf import settings as django_settings
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import cached_property
 from django.utils.importlib import import_module
+from django.utils.translation import ugettext as _
 
 DEFAULT_MODULE_PARENT_DIR_PATTERNS = [
     r'\.egg[/\\]',
@@ -77,7 +81,17 @@ class LazySettings(object):
 
     @property
     def YADP_PROFILER_BACKEND(self):
-        return getattr(django_settings, 'YADP_PROFILER_BACKEND', 'cProfile')
+        backend = getattr(django_settings, 'YADP_PROFILER_BACKEND', 'cProfile')
+        if backend == 'yappi':
+            msg = _('Yappi does not work on {platform}, please select a different value for YADP_PROFILER_BACKEND')
+            if platform.python_implementation() == 'PyPy':
+                raise ImproperlyConfigured(msg.format('PyPy'))
+            version = sys.version_info[:2]
+            if version == (3, 2):
+                raise ImproperlyConfigured(msg.format('Python 3.2'))
+            if version == (3, 1):
+                raise ImproperlyConfigured(msg.format('Python 3.1'))
+        return backend
 
     @cached_property
     def path_to_module_function(self):

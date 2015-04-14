@@ -12,7 +12,6 @@ from __future__ import unicode_literals
 
 import atexit
 import cProfile
-from cStringIO import StringIO
 import marshal
 import mock
 from optparse import make_option
@@ -24,6 +23,7 @@ import tempfile
 from django.conf import settings
 from django.core.management import call_command, ManagementUtility
 from django.core.management.base import BaseCommand
+from django.utils.six.moves import cStringIO as StringIO
 
 from yet_another_django_profiler.middleware import func_strip_path, which
 

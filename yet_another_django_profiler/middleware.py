@@ -11,9 +11,8 @@ Yet Another Django Profiler middleware implementation
 from __future__ import unicode_literals
 
 import cProfile
-from cStringIO import StringIO
+import logging
 import marshal
-from django.utils import six
 import mock
 import os
 import pstats
@@ -21,8 +20,11 @@ import subprocess
 import tempfile
 
 from django.core.exceptions import MiddlewareNotUsed
+from django.utils.six.moves import cStringIO as StringIO
 
 from .conf import settings
+
+log = logging.getLogger(__name__)
 
 
 def func_strip_path(func_name):
@@ -100,17 +102,20 @@ class ProfilerMiddleware(object):
         if not settings.YADP_ENABLED:
             # Disable the middleware completely when YADP_ENABLED = False
             raise MiddlewareNotUsed()
+        self.error = None
         self.profiler = None
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if settings.YADP_ENABLED and (settings.YADP_PROFILE_PARAMETER in request.REQUEST):
+            self.error = None
             if settings.YADP_PROFILER_BACKEND == 'yappi':
                 try:
-                    import yadp_yappi
-                    self.profiler = yadp_yappi.YappiProfile()
-                except:
-                    self.profiler = 'Could not find Yappi; please install Yappi to be able to use it for profiling'
-
+                    from .yadp_yappi import YappiProfile
+                    self.profiler = YappiProfile()
+                except Exception as e:
+                    log.exception(e)
+                    self.error = 'Could not find Yappi; please install Yappi to be able to use it for profiling'
+                    return None
             else:
                 self.profiler = cProfile.Profile()
             args = (request,) + callback_args
@@ -118,8 +123,8 @@ class ProfilerMiddleware(object):
 
     def process_response(self, request, response):
         if settings.YADP_ENABLED and settings.YADP_PROFILE_PARAMETER in request.REQUEST:
-            if isinstance(self.profiler, six.string_types):
-                return text_response(response, self.profiler)  # we got an error
+            if self.error:
+                return text_response(response, self.error)
             self.profiler.create_stats()
             mode = request.REQUEST[settings.YADP_PROFILE_PARAMETER]
             if mode == 'file':

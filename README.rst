@@ -135,9 +135,10 @@ following settings:
 
 * ``YADP_PATTERN_PARAMETER`` (default is "pattern")
 
-You can use Yappi(`Yet Another Python Profiler <https://code.google.com/p/yappi/>`_)
+You can use Yappi (`Yet Another Python Profiler <https://code.google.com/p/yappi/>`_)
 as a profiler backend instead of cProfile. To do that just specify
-``YADP_PROFILER_BACKEND = 'yappi'`` in the settings.
+``YADP_PROFILER_BACKEND = 'yappi'`` in the settings.  Note that Yappi does not
+currently work on PyPy or CPython 3.2.
 
 An effort is made to convert the absolute Python file paths provided by the
 profiler to full-qualified module names (which are typically shorter and
@@ -161,6 +162,13 @@ In order to get simple and meaningful profiling data, a
 `few other changes <https://github.com/safarijv/yet-another-django-profiler/blob/master/docs/settings.rst>`_
 to your settings may be in order.
 
+Running Tests
+-------------
+To run tests in all currently supported combinations of Python and Django, run
+``tox``.  If you're running tox from a Python 2 environment, you can instead
+run ``detox`` to execute all the test environments in parallel.  See the
+`tox documentation <https://tox.readthedocs.org/en/latest/>`_ for instructions
+on running a single test case or environment.
 
 License
 -------
