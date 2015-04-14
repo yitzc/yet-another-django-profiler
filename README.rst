@@ -1,6 +1,9 @@
 yet-another-django-profiler README
 ==================================
 
+.. image:: https://travis-ci.org/safarijv/yet-another-django-profiler.svg?branch=master
+    :target: https://travis-ci.org/safarijv/yet-another-django-profiler
+
 Yet Another Django Profiler attempts to combine the best features of assorted
 other Django profiling utilities that have been created over the years.
 (For more background information, see my
