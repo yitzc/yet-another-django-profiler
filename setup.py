@@ -27,7 +27,7 @@ if on_rtd:
     from pip.req import parse_requirements
     session = PipSession()
     root_dir = os.path.abspath(os.path.dirname(__file__))
-    requirements_path = os.path.join(root_dir, 'requirements', 'development.txt')
+    requirements_path = os.path.join(root_dir, 'requirements', 'documentation.txt')
     finder = PackageFinder([], [], session=session)
     requirements = parse_requirements(requirements_path, finder, session=session)
     install_requires.extend([r.req for r in requirements])
