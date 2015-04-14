@@ -10,15 +10,21 @@ Yet Another Django Profiler request parameters tests
 
 from __future__ import unicode_literals
 
+import platform
+import sys
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.utils.text import force_text
+
+import pytest
 
 HELP_EXCERPT = 'profiling middleware'
 
 
-@override_settings(YADP_ENABLED=True)
-class ParametersTest(TestCase):
+class ParameterCases(object):
+    """Parameter tests to be run for each"""
 
     def test_call_graph(self):
         """Using "profile" without a parameter should yield a PDF call graph"""
@@ -63,7 +69,7 @@ class ParametersTest(TestCase):
     def test_calls_by_primitive_call_count(self):
         """Using profile=pcalls should show a table of function calls sorted by primitive call count"""
         response = self._get_test_page('profile=pcalls')
-        self.assertRegexpMatches(response.content, r'Ordered by: (primitive )?call count')
+        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r'Ordered by: (primitive )?call count')
 
     def test_calls_by_stdname(self):
         """Using profile=stdname should show a table of function calls sorted by standard name"""
@@ -98,10 +104,31 @@ class ParametersTest(TestCase):
     def test_pattern(self):
         """It should be possible to specify a regular expression filter pattern"""
         response = self._get_test_page('profile=time&pattern=test')
-        self.assertContains(response, "due to restriction <u'test'>")
+        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r"due to restriction <u?'test'>")
 
     def _get_test_page(self, params=''):
         url = reverse('test')
         if params:
             url += '?' + params
         return self.client.get(url)
+
+
+@override_settings(YADP_ENABLED=True)
+class CProfileTest(TestCase, ParameterCases):
+
+    def test_backend(self):
+        """The cProfile profiling backend should be used"""
+        from yet_another_django_profiler.conf import settings
+        assert settings.YADP_PROFILER_BACKEND == 'cProfile'
+
+
+@pytest.mark.skipif(platform.python_implementation() != 'CPython' or sys.version_info[:2] == (3, 2),
+                    reason='yappi does not yet work in this Python implementation')
+@override_settings(YADP_ENABLED=True, YADP_PROFILER_BACKEND='yappi')
+class YappiTest(TestCase, ParameterCases):
+    """Profiling parameter tests using Yappi instead of cProfile"""
+
+    def test_backend(self):
+        """The Yappi profiling backend should be used"""
+        from yet_another_django_profiler.conf import settings
+        assert settings.YADP_PROFILER_BACKEND == 'yappi'
