@@ -16,9 +16,6 @@ sphinx_rtd_theme==0.1.5
 
 # Direct dependencies
 
-# Pin the exact version of this direct dependency
-mock==1.0.1
-
 # Utilities for managing technical documentation
 sbo-sphinx==2.0.3
 

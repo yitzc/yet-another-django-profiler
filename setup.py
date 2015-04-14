@@ -26,11 +26,12 @@ if on_rtd:
     from pip.index import PackageFinder
     from pip.req import parse_requirements
     session = PipSession()
+    install_requires = ['Django==1.8', 'mock==1.0.1']
     root_dir = os.path.abspath(os.path.dirname(__file__))
     requirements_path = os.path.join(root_dir, 'requirements', 'documentation.txt')
     finder = PackageFinder([], [], session=session)
     requirements = parse_requirements(requirements_path, finder, session=session)
-    install_requires.extend([r.req for r in requirements])
+    install_requires.extend([str(r.req) for r in requirements])
 
 setup(
     name='yet-another-django-profiler',
