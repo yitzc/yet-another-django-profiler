@@ -24,7 +24,7 @@ HELP_EXCERPT = 'profiling middleware'
 
 
 class ParameterCases(object):
-    """Parameter tests to be run for each"""
+    """Parameter tests to be run for each profiler backend"""
 
     def test_call_graph(self):
         """Using "profile" without a parameter should yield a PDF call graph"""
@@ -115,6 +115,7 @@ class ParameterCases(object):
 
 @override_settings(YADP_ENABLED=True)
 class CProfileTest(TestCase, ParameterCases):
+    """Profiling parameter tests using cProfile"""
 
     def test_backend(self):
         """The cProfile profiling backend should be used"""

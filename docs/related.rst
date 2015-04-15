@@ -51,12 +51,9 @@ Dependencies
 ------------
 
 Like the geordi middleware, this one uses Gprof2dot to generate call graphs.
-There doesn't seem to be a current version of it nicely packaged for automatic
-installation (a `rather old version <https://pypi.python.org/pypi/gprof2dot/1.0>`_
-is on PyPI but doesn't appear when searching the site).  I've opened an
-`issue <https://code.google.com/p/jrfonseca/issues/detail?id=91>`_ for this,
-but haven't received a response yet.  In the meantime, I've bundled the script
-in the yet-another-django-profiler distribution for ease of installation.
+It's meant to be run from the command line and does not provide convenient
+hooks for customization, so a slightly modified version of the script has been
+bundled in the yet-another-django-profiler distribution.
 
 `Graphviz <http://www.graphviz.org/>`_ is the graph visualization library
 used by Gprof2dot to do the graphics work.  It's a native library that needs
@@ -70,3 +67,10 @@ extensions and common configuration for the documentation of this and other
 libraries being developed at Safari Books Online.  You don't need it to run
 the middleware, but you'll want to install it if you use Sphinx to build the
 documentation on your system.
+
+`yappi <https://code.google.com/p/yappi/>`_ (Yet Another Python Profiler) can
+optionally be used instead of cProfile to collect performance statistics.  The
+main advantage of doing so is that it collects data from all running threads,
+whereas cProfile only monitors a single thread.  However, it currently doesn't
+work on some of the platforms that cProfile does (specifically PyPy and
+CPython 3.0.x through 3.2.x).
