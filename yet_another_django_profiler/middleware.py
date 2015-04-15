@@ -166,6 +166,12 @@ class ProfilerMiddleware(object):
                     restrictions.append(int(request.REQUEST[settings.YADP_MAX_CALLS_PARAMETER]))
                 elif settings.YADP_PATTERN_PARAMETER not in request.REQUEST:
                     restrictions.append(.2)
-                stats.sort_stats(mode).print_stats(*restrictions)
+                
+                try:
+                    stats.sort_stats(mode).print_stats(*restrictions)
+                except KeyError:
+                    # Bad parameter for sorting stats
+                    return text_response(response, "Bad parameter passed for sorting statistics.\n" + ProfilerMiddleware.__doc__)
+                
                 return text_response(response, out.getvalue())
         return response
