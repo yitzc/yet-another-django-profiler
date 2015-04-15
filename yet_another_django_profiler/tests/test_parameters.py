@@ -122,7 +122,7 @@ class ParameterCases(object):
     def test_pattern(self):
         """It should be possible to specify a regular expression filter pattern"""
         response = self._get_test_page('profile=time&pattern=test')
-        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r"due to restriction &lt;u&#39;test&#39;&gt;")
+        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r"due to restriction &lt;u?&#39;test&#39;&gt;")
 
     def _get_test_page(self, params=''):
         url = reverse('test')
