@@ -20,12 +20,23 @@ import subprocess
 import sys
 import tempfile
 
-from django.conf import settings
+import django
+from django.conf import settings as django_settings
 from django.core.management import call_command, ManagementUtility
 from django.core.management.base import BaseCommand
 from django.utils.six.moves import cStringIO as StringIO
 
+from yet_another_django_profiler.conf import settings
 from yet_another_django_profiler.middleware import func_strip_path, which
+
+OPTIONS = (
+    (('-o', '--output'), {'dest': 'path', 'help': 'Path to a file in which to store the profiling output (required if generating a call graph PDF, other results are output to the console by default)'}),
+    (('-s', '--sort'), {'dest': 'sort', 'help': 'Statistic by which to sort the profiling data (default is to generate a call graph PDF instead)'}),
+    (('-f', '--fraction'), {'dest': 'fraction', 'help': 'The fraction of total function calls to display (the default of .2 is omitted if max-calls or pattern are specified)'}),
+    (('-m', '--max-calls'), {'dest': 'max_calls', 'help': 'The maximum number of function calls to display'}),
+    (('-p', '--pattern'), {'dest': 'pattern', 'help': 'Regular expression filter for function display names'}),
+    (('-b', '--backend'), {'dest': 'backend', 'default': 'cProfile', 'help': 'Profiler backend to use (cProfile or yappi)'}),
+)
 
 
 class Command(BaseCommand):
@@ -34,53 +45,28 @@ class Command(BaseCommand):
     """
     args = 'other_command <argument argument ...>'
     help = 'Profile another Django management command'
-    custom_options = (
-        make_option(
-            '-o',
-            '--output',
-            dest='path',
-            help='Path to a file in which to store the profiling output (required if generating a call graph PDF, other results are output to the console by default)'
-        ),
-        make_option(
-            '-s',
-            '--sort',
-            dest='sort',
-            help='Statistic by which to sort the profiling data (default is to generate a call graph PDF instead)'
-        ),
-        make_option(
-            '-f',
-            '--fraction',
-            dest='fraction',
-            help='The fraction of total function calls to display (the default of .2 is omitted if max-calls or pattern are specified)'
-        ),
-        make_option(
-            '-m',
-            '--max-calls',
-            dest='max_calls',
-            help='The maximum number of function calls to display'
-        ),
-        make_option(
-            '-p',
-            '--pattern',
-            dest='pattern',
-            help='Regular expression filter for function display names'
-        ),
-        make_option(
-            '-b',
-            '--backend',
-            dest='backend',
-            help='Profiler backend to use (cProfile or yappi)'
-        )
-    )
-    option_list = BaseCommand.option_list + custom_options
+    # Command line arguments for Django 1.7 and below
+    custom_options = tuple([make_option(*option[0], **option[1]) for option in OPTIONS])
+
+    @property
+    def use_argparse(self):
+        return not (django.VERSION[0] == 1 and django.VERSION[1] < 8)
+
+    def add_arguments(self, parser):
+        """Command line arguments for Django 1.8+"""
+        for option in OPTIONS:
+            parser.add_argument(*option[0], **option[1])
 
     def create_parser(self, prog_name, subcommand):
         """
         Override the base create_parser() method to ignore options of the
         command being profiled.
         """
+        if not self.use_argparse:
+            self.__class__.option_list = BaseCommand.option_list + self.custom_options
         parser = super(Command, self).create_parser(prog_name, subcommand)
-        parser.disable_interspersed_args()
+        if not self.use_argparse:
+            parser.disable_interspersed_args()
         return parser
 
     def handle(self, *args, **options):
@@ -99,22 +85,31 @@ class Command(BaseCommand):
         utility = ManagementUtility(sys.argv)
         command = utility.fetch_command(command_name)
         parser = command.create_parser(sys.argv[0], command_name)
-        command_options, command_args = parser.parse_args(list(args[1:]))
+        if self.use_argparse:
+            command_options = parser.parse_args(list(args[1:]))
+            command_args = vars(command_options).pop('args', ())
+        else:
+            command_options, command_args = parser.parse_args(list(args[1:]))
 
-        if command_name == 'test' and settings.TEST_RUNNER == 'django_nose.NoseTestSuiteRunner':
+        if command_name == 'test' and django_settings.TEST_RUNNER == 'django_nose.NoseTestSuiteRunner':
             # Ugly hack: make it so django-nose won't have nosetests choke on
             # our parameters
             BaseCommand.option_list += self.custom_options
 
-        if options['backend'] == 'yappi':
+        if options['backend'] == 'yappi' or (settings.YADP_PROFILER_BACKEND == 'yappi' and not options['backend']):
             import yet_another_django_profiler.yadp_yappi as yadp_yappi
             profiler = yadp_yappi.YappiProfile()
         else:
             profiler = cProfile.Profile()
 
-        atexit.register(output_results, profiler, options, self.stdout)
-        profiler.runcall(call_command, command_name, *command_args, **command_options.__dict__)
-        sys.exit(0)
+        if 'testing' not in options:
+            atexit.register(output_results, profiler, options, self.stdout)
+        profiler.runcall(call_command, command_name, *command_args,
+                         stdout=self.stdout, **vars(command_options))
+        if 'testing' in options:
+            output_results(profiler, options, self.stdout)
+        else:
+            sys.exit(0)
 
 
 def output_results(profiler, options, stdout):
