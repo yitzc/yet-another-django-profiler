@@ -1,0 +1,65 @@
+<!doctype html>
+    <head>
+        <style type="text/css">
+            #stats-options ul {
+                list-style-type: none;
+            }
+            #stats-options ul li {
+                display: inline;
+                margin-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <fieldset>
+            <legend>YADP Sort options</legend>
+            <form id="stats-options">
+                <ul>
+                    <li><input type="radio" name="order-by" value="calls" />calls</li>
+                    <li><input type="radio" name="order-by" value="cummulative" />cummulative</li>
+                    <li><input type="radio" name="order-by" value="file" />file</li>
+                    <li><input type="radio" name="order-by" value="line" />line</li>
+                    <li><input type="radio" name="order-by" value="module" />module</li>
+                    <li><input type="radio" name="order-by" value="name" />name</li>
+                    <li><input type="radio" name="order-by" value="nfl" />nfl</li>
+                    <li><input type="radio" name="order-by" value="pcalls" />pcalls</li>
+                    <li><input type="radio" name="order-by" value="stdname" />stdname</li>
+                    <li><input type="radio" name="order-by" value="time" />time</li>
+                </ul>
+            </form>
+        </fieldset>
+        <pre>
+            {{stats}}
+        </pre>
+    </body>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            // Get a list of query string parameters
+            var params = {}, hash;
+            var q = document.URL.split('?')[1];
+            if (q != undefined) {
+                q = q.split('&');
+                for(var i = 0; i < q.length; i++){
+                    hash = q[i].split('=');
+                    if (hash[1] !== undefined) {
+                        params[hash[0]] = hash[1];
+                    }
+                }
+            }
+            
+            // Try to select current order param
+            if (params['profile'])  {
+                $('#stats-options input[value='+params['profile']+']').prop('checked', true);
+            }
+            
+            // Redirect to display table with new order
+            $('#stats-options input').click(function(event) {
+                var new_params = params;
+                new_params['profile'] = $(event.target).val();
+                var url = document.URL.split('?')[0] + '?' + $.param(new_params);
+                window.location = url;
+            });
+        });
+    </script>
+</html>

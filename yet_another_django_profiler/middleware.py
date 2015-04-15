@@ -21,6 +21,7 @@ import tempfile
 
 from django.core.exceptions import MiddlewareNotUsed
 from django.utils.six.moves import cStringIO as StringIO
+from django.template.response import TemplateResponse
 
 from .conf import settings
 
@@ -38,6 +39,15 @@ def text_response(response, content):
     response.content = content
     response['Content-type'] = 'text/plain'
     return response
+
+
+def html_response(request, response, content):
+    """Return a html layout with sort options as the response content."""
+    template = TemplateResponse(request, "profile_stats.html",
+                                {"stats": content,
+                                 "order_by": request.GET.get('profile', None)})
+    template.render()
+    return template
 
 
 def which(program):
@@ -166,12 +176,12 @@ class ProfilerMiddleware(object):
                     restrictions.append(int(request.REQUEST[settings.YADP_MAX_CALLS_PARAMETER]))
                 elif settings.YADP_PATTERN_PARAMETER not in request.REQUEST:
                     restrictions.append(.2)
-                
+
                 try:
                     stats.sort_stats(mode).print_stats(*restrictions)
                 except KeyError:
                     # Bad parameter for sorting stats
                     return text_response(response, "Bad parameter passed for sorting statistics.\n" + ProfilerMiddleware.__doc__)
-                
-                return text_response(response, out.getvalue())
+
+                return html_response(request, response, out.getvalue())
         return response
