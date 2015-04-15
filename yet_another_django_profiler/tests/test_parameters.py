@@ -23,8 +23,26 @@ import pytest
 HELP_EXCERPT = 'profiling middleware'
 
 
+def escape(text):
+    """Encode special entities that appear in the text."""
+    if sys.version_info.major == 2:
+        import cgi
+        escaped_text = cgi.escape(text)
+    elif sys.version_info.major == 3:
+        if sys.version_info.minor < 2:
+            import cgi
+            escaped_text = cgi.escape(text)
+        else:
+            import html
+            escaped_text = html.escape(text)
+
+    # Escape single quotes
+    escaped_text.replace
+    return escaped_text.encode('ascii', 'xmlcharrefreplace')
+
+
 class ParameterCases(object):
-    """Parameter tests to be run for each profiler backend"""
+    """Parameter tests to be run for each"""
 
     def test_call_graph(self):
         """Using "profile" without a parameter should yield a PDF call graph"""
@@ -89,22 +107,22 @@ class ParameterCases(object):
     def test_default_fraction(self):
         """By default, the fraction of displayed function calls should be 0.2"""
         response = self._get_test_page('profile=time')
-        self.assertContains(response, 'due to restriction <0.2>')
+        self.assertContains(response, escape('due to restriction <0.2>'))
 
     def test_custom_fraction(self):
         """It should be possible to specify the fraction of displayed function calls"""
         response = self._get_test_page('profile=time&fraction=0.3')
-        self.assertContains(response, 'due to restriction <0.3>')
+        self.assertContains(response, escape('due to restriction <0.3>'))
 
     def test_max_calls(self):
         """It should be possible to specify the maximum number of displayed function calls"""
         response = self._get_test_page('profile=time&max_calls=5')
-        self.assertContains(response, 'to 5 due to restriction <5>')
+        self.assertContains(response, escape('to 5 due to restriction <5>'))
 
     def test_pattern(self):
         """It should be possible to specify a regular expression filter pattern"""
         response = self._get_test_page('profile=time&pattern=test')
-        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r"due to restriction <u?'test'>")
+        self.assertRegexpMatches(force_text(response.content, 'utf-8'), r"due to restriction &lt;u&#39;test&#39;&gt;")
 
     def _get_test_page(self, params=''):
         url = reverse('test')
